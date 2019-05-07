@@ -89,12 +89,14 @@ ParamSTMoE <- setRefClass(
 
         sigma[k] <<- sum(statSTMoE$tik[, k]*(statSTMoE$wik[,k] * ((modelSTMoE$Y-phiBeta$XBeta%*%betak)^2) - 2 * delta[k] * statSTMoE$E1ik[,k] * (modelSTMoE$Y - phiBeta$XBeta %*% betak) + statSTMoE$E2ik[,k]))/(2*(1-delta[k]^2) * sum(statSTMoE$tik[,k]))
 
+        print(sigma[k])
         sigmak <- sqrt(sigma[k])
 
+        browser()
         # update the deltak (the skewness parameter)
         delta[k] <<- uniroot(f <- function(dlt) {
           dlt*(1-dlt^2)*sum(statSTMoE$tik[, k])
-          + (1+ delta^2)*sum(statSTMoE$tik[, k] * statSTMoE$dik[,k]*statSTMoE$E1ik[,k]/sigmak)
+          + (1+ dlt^2)*sum(statSTMoE$tik[, k] * statSTMoE$dik[,k]*statSTMoE$E1ik[,k]/sigmak)
           - dlt * sum(statSTMoE$tik[, k] * (statSTMoE$wik[,k] * (statSTMoE$dik[,k]^2) + statSTMoE$E2ik[,k]/(sigmak^2)))
         }, c(-1, 1))$root
 

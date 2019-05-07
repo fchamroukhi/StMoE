@@ -1,7 +1,7 @@
 source("R/utils.R")
 source("R/ParamSTMoE.R")
 source("R/StatSTMoE.R")
-source("R/FittedSTMoE.R")
+# source("R/FittedSTMoE.R")
 
 EM <- function(modelSTMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE, verbose_IRLS = FALSE) {
     phiBeta <- designmatrix(x = modelSTMoE$X, p = modelSTMoE$p)
