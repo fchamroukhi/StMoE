@@ -18,7 +18,7 @@ modelSTMoE <- ModelSTMoE(fData, K, p, q)
 
 n_tries <- 1
 max_iter = 1500
-threshold <- 1e-6
+threshold <- 1e-5
 verbose <- TRUE
 verbose_IRLS <- FALSE
 

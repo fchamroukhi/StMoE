@@ -1,11 +1,11 @@
 source("R/utils.R")
-source("R/ParamSNMoE.R")
-source("R/StatSNMoE.R")
-source("R/FittedSNMoE.R")
+source("R/ParamSTMoE.R")
+source("R/StatSTMoE.R")
+source("R/FittedSTMoE.R")
 
-EM <- function(modelSNMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE, verbose_IRLS = FALSE) {
-    phiBeta <- designmatrix(x = modelSNMoE$X, p = modelSNMoE$p)
-    phiAlpha <- designmatrix(x = modelSNMoE$X, p = modelSNMoE$q)
+EM <- function(modelSTMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE, verbose_IRLS = FALSE) {
+    phiBeta <- designmatrix(x = modelSTMoE$X, p = modelSTMoE$p)
+    phiAlpha <- designmatrix(x = modelSTMoE$X, p = modelSTMoE$q)
 
     top <- 0
     try_EM <- 0
@@ -18,8 +18,8 @@ EM <- function(modelSNMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
       time <- Sys.time()
 
       # Initializations
-      param <- ParamSNMoE(modelSNMoE)
-      param$initParam(modelSNMoE, phiAlpha, phiBeta, try_EM, segmental = TRUE)
+      param <- ParamSTMoE(modelSTMoE)
+      param$initParam(modelSTMoE, phiAlpha, phiBeta, try_EM, segmental = TRUE)
 
 
 
@@ -27,12 +27,13 @@ EM <- function(modelSNMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
       converge <- FALSE
       prev_loglik <- -Inf
 
-      stat <- StatSNMoE(modelSNMoE)
+      stat <- StatSTMoE(modelSTMoE)
+      stat$univSTMoEpdf(modelSTMoE, param, phiBeta, phiAlpha)
 
       while (!converge && (iter <= max_iter)) {
-        stat$EStep(modelSNMoE, param, phiBeta, phiAlpha)
+        stat$EStep(modelSTMoE, param, phiBeta, phiAlpha)
 
-        reg_irls <- param$MStep(modelSNMoE, stat, phiAlpha, phiBeta, verbose_IRLS)
+        reg_irls <- param$MStep(modelSTMoE, stat, phiAlpha, phiBeta, verbose_IRLS)
 
         stat$computeLikelihood(reg_irls)
         # FIN EM
@@ -83,8 +84,8 @@ EM <- function(modelSNMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
 
 
     # FINISH computation of statSolution
-    statSolution$computeStats(modelSNMoE, paramSolution, phiBeta, phiAlpha, cpu_time_all)
+    statSolution$computeStats(modelSTMoE, paramSolution, phiBeta, phiAlpha, cpu_time_all)
 
-    return(FittedSNMoE(modelSNMoE, paramSolution, statSolution))
+    return(FittedSTMoE(modelSTMoE, paramSolution, statSolution))
 
   }
