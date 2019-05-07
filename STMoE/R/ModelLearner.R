@@ -19,7 +19,7 @@ EM <- function(modelSTMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
 
       # Initializations
       param <- ParamSTMoE(modelSTMoE)
-      param$initParam(modelSTMoE, phiAlpha, phiBeta, try_EM, segmental = TRUE)
+      param$initParam(modelSTMoE, phiAlpha, phiBeta, try_EM, segmental = FALSE)
 
 
 

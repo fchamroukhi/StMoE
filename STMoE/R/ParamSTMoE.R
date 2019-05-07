@@ -57,7 +57,7 @@ ParamSTMoE <- setRefClass(
       }
 
       if (try_EM == 1) {
-        alpha <<- zeros(modelSTMoE$q + 1, modelSTMoE$K - 1)
+        alpha <<- rand(modelSTMoE$q + 1, modelSTMoE$K - 1)
       }
 
       # Initialize the skewness parameter Lambdak (by equivalence delta)
@@ -73,7 +73,7 @@ ParamSTMoE <- setRefClass(
       # M-Step
 
       res_irls <- IRLS(tauijk = statSTMoE$tik, phiW = phiAlpha$XBeta, Wg_init = alpha, verbose_IRLS = verbose_IRLS)
-      statSTMoE$piik <- res_irls$piik
+      # statSTMoE$piik <- res_irls$piik
       reg_irls <- res_irls$reg_irls
 
       alpha <<- res_irls$W
@@ -89,15 +89,13 @@ ParamSTMoE <- setRefClass(
 
         sigma[k] <<- sum(statSTMoE$tik[, k]*(statSTMoE$wik[,k] * ((modelSTMoE$Y-phiBeta$XBeta%*%betak)^2) - 2 * delta[k] * statSTMoE$E1ik[,k] * (modelSTMoE$Y - phiBeta$XBeta %*% betak) + statSTMoE$E2ik[,k]))/(2*(1-delta[k]^2) * sum(statSTMoE$tik[,k]))
 
-        print(sigma[k])
         sigmak <- sqrt(sigma[k])
 
-        browser()
         # update the deltak (the skewness parameter)
         delta[k] <<- uniroot(f <- function(dlt) {
-          dlt*(1-dlt^2)*sum(statSTMoE$tik[, k])
+          return(dlt*(1-dlt^2)*sum(statSTMoE$tik[, k])
           + (1+ dlt^2)*sum(statSTMoE$tik[, k] * statSTMoE$dik[,k]*statSTMoE$E1ik[,k]/sigmak)
-          - dlt * sum(statSTMoE$tik[, k] * (statSTMoE$wik[,k] * (statSTMoE$dik[,k]^2) + statSTMoE$E2ik[,k]/(sigmak^2)))
+          - dlt * sum(statSTMoE$tik[, k] * (statSTMoE$wik[,k] * (statSTMoE$dik[,k]^2) + statSTMoE$E2ik[,k]/(sigmak^2))))
         }, c(-1, 1))$root
 
 
@@ -105,7 +103,7 @@ ParamSTMoE <- setRefClass(
 
 
         nuk[k] <<- uniroot(f <- function(nnu) {
-          - psigamma((nnu)/2) + log((nnu)/2) + 1 + sum(statSTMoE$tik[,k] * (statSTMoE$E3ik[,k] - statSTMoE$wik[,k]))/sum(statSTMoE$tik[,k])
+          return(- psigamma((nnu)/2) + log((nnu)/2) + 1 + sum(statSTMoE$tik[,k] * (statSTMoE$E3ik[,k] - statSTMoE$wik[,k]))/sum(statSTMoE$tik[,k]))
         }, c(0.1, 200))$root
       }
 
