@@ -71,14 +71,16 @@ StatSTMoE <- setRefClass(
     computeStats = function(modelSTMoE, paramSTMoE, phiBeta, phiAlpha, cpu_time_all) {
       cpu_time <<- mean(cpu_time_all)
 
+      Xi_nuk = sqrt(paramSTMoE$nuk/pi) * (gamma(paramSTMoE$nuk/2 - 1/2)) / (gamma(paramSTMoE$nuk/2));
+
       # E[yi|zi=k]
-      Ey_k <<- phiBeta$XBeta[1:modelSTMoE$n, ] %*% paramSTMoE$beta + ones(modelSTMoE$n, 1) %*% (sqrt(2 / pi) * paramSTMoE$delta * paramSTMoE$sigma)
+      Ey_k <<- phiBeta$XBeta[1:modelSTMoE$n, ] %*% paramSTMoE$beta + ones(modelSTMoE$n, 1) %*% (paramSTMoE$delta * sqrt(paramSTMoE$sigma) * Xi_nuk)
 
       # E[yi]
       Ey <<- matrix(apply(piik * Ey_k, 1, sum))
 
       # Var[yi|zi=k]
-      Var_yk <<- (1 - (2 / pi) * (paramSTMoE$delta ^ 2)) * (paramSTMoE$sigma ^ 2)
+      Var_yk <<- (paramSTMoE$nuk/(paramSTMoE$nuk-2) - (paramSTMoE$delta^2) * (Xi_nuk^2)) * paramSTMoE$sigma
 
       # Var[yi]
       Vary <<- apply(piik * (Ey_k ^ 2 + ones(modelSTMoE$n, 1) %*% Var_yk), 1, sum) - Ey ^2
