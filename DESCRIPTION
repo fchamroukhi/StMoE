@@ -8,4 +8,24 @@ Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: What license is it under?
 LazyData: true
-
+Collate:
+    STMoE-package.R
+    RcppExports.R
+    utils.R
+    FData.R
+    ModelSTMoE.R
+    ParamSTMoE.R
+    StatSTMoE.R
+    FittedSTMoE.R
+    ModelLearner.R
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo
+Imports: 
+    Rcpp
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
