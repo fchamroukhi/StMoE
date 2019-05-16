@@ -1,6 +1,6 @@
 STMoE
 
-A R toolbox for modeling, sampling, inference, and clustering heteregenous data with the Skew-t Mixture-of-Experts (STMoE) model.
+A R toolbox for modelling, sampling, inference, and clustering heterogeneous data with the Skew-t Mixture-of-Experts (STMoE) model.
 
 The code can be run on simulated data
 ```
