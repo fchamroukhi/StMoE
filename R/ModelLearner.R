@@ -48,7 +48,7 @@ EM <- function(modelSTMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
         converge <- abs((stat$log_lik - prev_loglik) / prev_loglik) <= threshold
         if (is.na(converge)) {
           converge <- FALSE
-        } # Basically for the first iteration when prev_loglik is Inf
+        } # Basically for the first iteration when prev_loglik is -Inf
 
         prev_loglik <- stat$log_lik
         stat$stored_loglik[iter] <- stat$log_lik
@@ -57,7 +57,7 @@ EM <- function(modelSTMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
 
       cpu_time_all[try_EM] <- Sys.time() - time
 
-      # at this point we have computed param and stat that contains all the information
+      # end of computation of all estimates (param and stat)
 
       if (stat$log_lik > best_loglik) {
         statSolution <- stat$copy()
