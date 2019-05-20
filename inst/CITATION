@@ -1,0 +1,29 @@
+citHeader("To cite STMoE in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "Skew t mixture of experts",
+  author   = personList(person(given="F.", family="Chamroukhi")),
+  journal  = "Neurocomputing - Elsevier",
+  year     = "2017",
+  volume   = "266",
+  pages    = "390-408",
+  url      = "https://chamroukhi.com/papers/STMoE.pdf",
+  textVersion = "Chamroukhi F (2017). \u201cSkew t mixture of experts.\u201d _Neurocomputing - Elsevier_,
+  *266*, pp. 390-408. <URL:https://chamroukhi.com/papers/STMoE.pdf>."
+)
+
+citEntry(
+  entry = "Article",
+  title = "Model-Based Clustering and Classification of Functional Data",
+  author = personList(person(given="F.", family="Chamroukhi"),
+                      person(given="Hien D.", family="Nguyen")),
+  journal = "Wiley Interdisciplinary Reviews: Data Mining and Knowledge Discovery",
+  year = "2019",
+  url = "https://chamroukhi.com/papers/MBCC-FDA.pdf",
+  doi = "https://doi.org/10.1002/widm.1298",
+  textVersion = "Chamroukhi F, Nguyen H (2019). \u201cModel-Based Clustering and
+  Classification of Functional Data.\u201d _Wiley Interdisciplinary Reviews: Data Mining and
+  Knowledge Discovery_. doi: 10.1002/widm.1298 (URL: https://doi.org/10.1002/widm.1298),
+  <URL:https://chamroukhi.com/papers/MBCC-FDA.pdf>."
+)
