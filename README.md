@@ -1,23 +1,28 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-Overview
---------
+
+## Overview
 
 <!-- badges: start -->
+
 <!-- badges: end -->
-User-friendly and flexible algorithm modelling, sampling, inference, and clustering heterogeneous data with the Skew-t Mixture-of-Experts (STMoE) model.
 
-Installation
-------------
+User-friendly and flexible algorithm modelling, sampling, inference, and
+clustering heterogeneous data with the Skew-t Mixture-of-Experts (STMoE)
+model.
 
-You can install the development version of StMoE from [GitHub](https://github.com/) with:
+## Installation
+
+You can install the development version of StMoE from
+[GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
 devtools::install_github("fchamroukhi/StMoE")
 ```
 
-To build *vignettes* for examples of usage, type the command below instead:
+To build *vignettes* for examples of usage, type the command below
+instead:
 
 ``` r
 # install.packages("devtools")
@@ -32,15 +37,14 @@ Use the following command to display vignettes:
 browseVignettes("STMoE")
 ```
 
-Usage
------
+## Usage
 
 ``` r
 library(STMoE)
 
 data("simulatedstructureddata")
 fData <- FData$new()
-fData$setData(t(simulatedstructureddata$X), simulatedstructureddata$Y)
+fData$setData(simulatedstructureddata$X, simulatedstructureddata$Y)
 
 K <- 2 # number of regimes (mixture components)
 p <- 1 # dimension of beta (order of the polynomial regressors)

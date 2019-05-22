@@ -38,7 +38,7 @@ FittedSTMoE <- setRefClass(
       }
       for (k in 1:modelSTMoE$K) {
         index <- statSTMoE$klas == k
-        points(modelSTMoE$X[, index], modelSTMoE$Y[index, ], col = colorsvec[k], cex = 0.7, pch = 3)
+        points(modelSTMoE$X[index], modelSTMoE$Y[index, ], col = colorsvec[k], cex = 0.7, pch = 3)
       }
 
       # Observed data log-likelihood
