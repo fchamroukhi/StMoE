@@ -1,6 +1,6 @@
-EM <- function(modelSTMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE, verbose_IRLS = FALSE) {
-    phiBeta <- designmatrix(x = modelSTMoE$X, p = modelSTMoE$p)
-    phiAlpha <- designmatrix(x = modelSTMoE$X, p = modelSTMoE$q)
+EM <- function(modelStMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE, verbose_IRLS = FALSE) {
+    phiBeta <- designmatrix(x = modelStMoE$X, p = modelStMoE$p)
+    phiAlpha <- designmatrix(x = modelStMoE$X, p = modelStMoE$q)
 
     top <- 0
     try_EM <- 0
@@ -13,8 +13,8 @@ EM <- function(modelSTMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
       time <- Sys.time()
 
       # Initializations
-      param <- ParamSTMoE(modelSTMoE)
-      param$initParam(modelSTMoE, phiAlpha, phiBeta, try_EM, segmental = FALSE)
+      param <- ParamStMoE(modelStMoE)
+      param$initParam(modelStMoE, phiAlpha, phiBeta, try_EM, segmental = FALSE)
 
 
 
@@ -22,13 +22,13 @@ EM <- function(modelSTMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
       converge <- FALSE
       prev_loglik <- -Inf
 
-      stat <- StatSTMoE(modelSTMoE)
-      stat$univSTMoEpdf(modelSTMoE, param, phiBeta, phiAlpha)
+      stat <- StatStMoE(modelStMoE)
+      stat$univStMoEpdf(modelStMoE, param, phiBeta, phiAlpha)
 
       while (!converge && (iter <= max_iter)) {
-        stat$EStep(modelSTMoE, param, phiBeta, phiAlpha)
+        stat$EStep(modelStMoE, param, phiBeta, phiAlpha)
 
-        reg_irls <- param$MStep(modelSTMoE, stat, phiAlpha, phiBeta, verbose_IRLS)
+        reg_irls <- param$MStep(modelStMoE, stat, phiAlpha, phiBeta, verbose_IRLS)
 
         stat$computeLikelihood(reg_irls)
         # FIN EM
@@ -79,8 +79,8 @@ EM <- function(modelSTMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
 
 
     # FINISH computation of statSolution
-    statSolution$computeStats(modelSTMoE, paramSolution, phiBeta, phiAlpha, cpu_time_all)
+    statSolution$computeStats(modelStMoE, paramSolution, phiBeta, phiAlpha, cpu_time_all)
 
-    return(FittedSTMoE(modelSTMoE, paramSolution, statSolution))
+    return(FittedStMoE(modelStMoE, paramSolution, statSolution))
 
   }

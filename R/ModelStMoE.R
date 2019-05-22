@@ -1,5 +1,5 @@
-ModelSTMoE <- setRefClass(
-  "ModelSTMoE",
+ModelStMoE <- setRefClass(
+  "ModelStMoE",
   contains = "FData",
   # Define the fields
   fields = list(
@@ -13,11 +13,11 @@ ModelSTMoE <- setRefClass(
   )
 )
 
-ModelSTMoE <- function(fData, K, p, q) {
+ModelStMoE <- function(fData, K, p, q) {
   nu <<- (p + q + 3) * K - (q + 1)
 
   new(
-    "ModelSTMoE",
+    "ModelStMoE",
     Y = fData$Y,
     X = fData$X,
     m = fData$m,

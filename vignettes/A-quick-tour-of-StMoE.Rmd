@@ -1,8 +1,8 @@
 ---
-title: "A-quick-tour-of-STMoE"
+title: "A-quick-tour-of-StMoE"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{A-quick-tour-of-STMoE}
+  %\VignetteIndexEntry{A-quick-tour-of-StMoE}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -26,13 +26,13 @@ knit_hooks$set(par = function(before, options, envir)
 ```
 
 ```{r, message = FALSE, echo = FALSE}
-library(STMoE)
+library(StMoE)
 ```
 
 # Introduction
 
-**STMoE** is a contributed R package for segmentation. It provides functions for parameter estimation via the EM algorithm. This document gives a quick tour of **STMoE** (version `r packageVersion("STMoE")`) functionalities. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
-See `help(package="STMoE")` for further details and references provided by `citation("STMoE")`.
+**StMoE** is a contributed R package for segmentation. It provides functions for parameter estimation via the EM algorithm. This document gives a quick tour of **StMoE** (version `r packageVersion("StMoE")`) functionalities. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
+See `help(package="StMoE")` for further details and references provided by `citation("StMoE")`.
 
 # Load data
 
@@ -42,14 +42,14 @@ fData <- FData$new()
 fData$setData(simulatedstructureddata$X, simulatedstructureddata$Y)
 ```
 
-# Set up STMoE model parameters
+# Set up StMoE model parameters
 
 ```{r}
 K <- 2 # number of regimes (mixture components)
 p <- 1 # dimension of beta (order of the polynomial regressors)
 q <- 1 # dimension of w (order of the logistic regression: to be set to 1 for segmentation)
 
-modelSTMoE <- ModelSTMoE(fData, K, p, q)
+modelStMoE <- ModelStMoE(fData, K, p, q)
 ```
 
 # Set up EM parameters
@@ -65,7 +65,7 @@ verbose_IRLS <- FALSE
 # Estimation
 
 ```{r}
-solution <- EM(modelSTMoE, n_tries, max_iter, threshold, verbose, verbose_IRLS)
+solution <- EM(modelStMoE, n_tries, max_iter, threshold, verbose, verbose_IRLS)
 ```
 
 

@@ -1,4 +1,4 @@
-Package: STMoE
+Package: StMoE
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
@@ -9,14 +9,14 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 LazyData: true
 Collate:
-    STMoE-package.R
+    StMoE-package.R
     RcppExports.R
     utils.R
     FData.R
-    ModelSTMoE.R
-    ParamSTMoE.R
-    StatSTMoE.R
-    FittedSTMoE.R
+    ModelStMoE.R
+    ParamStMoE.R
+    StatStMoE.R
+    FittedStMoE.R
     ModelLearner.R
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1
