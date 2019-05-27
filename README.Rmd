@@ -49,8 +49,7 @@ browseVignettes("StMoE")
 library(StMoE)
 
 data("simulatedstructureddata")
-fData <- FData$new()
-fData$setData(simulatedstructureddata$X, simulatedstructureddata$Y)
+fData <- FData(simulatedstructureddata$X, simulatedstructureddata$Y)
 
 K <- 2 # number of regimes (mixture components)
 p <- 1 # dimension of beta (order of the polynomial regressors)
