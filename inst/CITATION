@@ -1,17 +1,4 @@
-citHeader("To cite STMoE in publications use:")
-
-citEntry(
-  entry    = "Article",
-  title    = "Skew t mixture of experts",
-  author   = personList(person(given="F.", family="Chamroukhi")),
-  journal  = "Neurocomputing - Elsevier",
-  year     = "2017",
-  volume   = "266",
-  pages    = "390-408",
-  url      = "https://chamroukhi.com/papers/STMoE.pdf",
-  textVersion = "Chamroukhi F (2017). \u201cSkew t mixture of experts.\u201d _Neurocomputing - Elsevier_,
-  *266*, pp. 390-408. <URL:https://chamroukhi.com/papers/STMoE.pdf>."
-)
+citHeader("To cite StMoE in publications use:")
 
 citEntry(
   entry = "Article",
@@ -23,7 +10,34 @@ citEntry(
   url = "https://chamroukhi.com/papers/MBCC-FDA.pdf",
   doi = "https://doi.org/10.1002/widm.1298",
   textVersion = "Chamroukhi F, Nguyen H (2019). \u201cModel-Based Clustering and
-  Classification of Functional Data.\u201d _Wiley Interdisciplinary Reviews: Data Mining and
-  Knowledge Discovery_. doi: 10.1002/widm.1298 (URL: https://doi.org/10.1002/widm.1298),
+  Classification of Functional Data.\u201d Wiley Interdisciplinary Reviews: Data Mining and
+  Knowledge Discovery. doi: 10.1002/widm.1298 (URL: https://doi.org/10.1002/widm.1298),
   <URL:https://chamroukhi.com/papers/MBCC-FDA.pdf>."
+)
+
+citEntry(
+  entry    = "Article",
+  title    = "Skew t mixture of experts",
+  author   = personList(person(given="F.", family="Chamroukhi")),
+  journal  = "Neurocomputing - Elsevier",
+  year     = "2017",
+  volume   = "266",
+  pages    = "390-408",
+  url      = "https://chamroukhi.com/papers/STMoE.pdf",
+  textVersion = "Chamroukhi F (2017). \u201cSkew t mixture of experts.\u201d
+  Neurocomputing - Elsevier,
+  266, pp. 390-408. <URL:https://chamroukhi.com/papers/STMoE.pdf>."
+)
+
+citEntry(
+  entry = "PhdThesis",
+  title = "Statistical learning of latent data models for complex data analysis",
+  author = person(given="F.", family="Chamroukhi"),
+  school = "Universit\u00e9 de Toulon",
+  year = "2015",
+  type = "Habilitation Thesis (HDR)",
+  url = "https://chamroukhi.com/Dossier/FChamroukhi-Habilitation.pdf",
+  textVersion = "Chamroukhi F (2015). Statistical learning of latent data models for
+  complex data analysis. Habilitation Thesis (HDR), Universit\u00e9 de Toulon.
+  <URL: https://chamroukhi.com/Dossier/FChamroukhi-Habilitation.pdf>."
 )
