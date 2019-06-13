@@ -13,7 +13,11 @@ Description: Robust modeling, density estimation, and model-based clustering of
     using skew-t mixture of experts fitted by the EM algorithm. See also the packages 
     'tMoE' and 'StMoE'.
 License: GPL (>= 3)
-Imports: 
+Depends: 
+    R (>= 2.10)
+Imports:
+    methods,
+    stats,
     Rcpp
 Suggests: 
     knitr,
