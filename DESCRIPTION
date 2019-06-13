@@ -26,10 +26,9 @@ Collate:
     RcppExports.R
     utils.R
     FData.R
-    ModelStMoE.R
     ParamStMoE.R
     StatStMoE.R
-    FittedStMoE.R
+    ModelStMoE.R
     ModelLearner.R
 VignetteBuilder: knitr
 Encoding: UTF-8

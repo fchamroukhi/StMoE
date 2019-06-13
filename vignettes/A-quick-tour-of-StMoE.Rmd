@@ -38,7 +38,6 @@ See `help(package="StMoE")` for further details and references provided by `cita
 
 ```{r}
 data("simulatedstructureddata")
-fData <- FData(simulatedstructureddata$X, simulatedstructureddata$Y)
 ```
 
 # Set up StMoE model parameters
@@ -48,7 +47,6 @@ K <- 2 # number of regimes (mixture components)
 p <- 1 # dimension of beta (order of the polynomial regressors)
 q <- 1 # dimension of w (order of the logistic regression: to be set to 1 for segmentation)
 
-modelStMoE <- ModelStMoE(fData, K, p, q)
 ```
 
 # Set up EM parameters
@@ -64,7 +62,7 @@ verbose_IRLS <- FALSE
 # Estimation
 
 ```{r}
-solution <- EM(modelStMoE, n_tries, max_iter, threshold, verbose, verbose_IRLS)
+solution <- emStMoE(simulatedstructureddata$X, matrix(simulatedstructureddata$Y), K, p, q, n_tries, max_iter, threshold, verbose, verbose_IRLS)
 ```
 
 

@@ -1,6 +1,7 @@
-EM <- function(modelStMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE, verbose_IRLS = FALSE) {
-    phiBeta <- designmatrix(x = modelStMoE$X, p = modelStMoE$p)
-    phiAlpha <- designmatrix(x = modelStMoE$X, p = modelStMoE$q)
+#' @export
+emStMoE <- function(X, Y, K, p, q = 1, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE, verbose_IRLS = FALSE) {
+
+    fData <- FData(X, Y)
 
     top <- 0
     try_EM <- 0
@@ -13,8 +14,8 @@ EM <- function(modelStMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
       time <- Sys.time()
 
       # Initializations
-      param <- ParamStMoE(modelStMoE)
-      param$initParam(modelStMoE, phiAlpha, phiBeta, try_EM, segmental = FALSE)
+      param <- ParamStMoE$new(fData = fData, K = K, p = p, q = q)
+      param$initParam(try_EM, segmental = FALSE)
 
 
 
@@ -22,13 +23,13 @@ EM <- function(modelStMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
       converge <- FALSE
       prev_loglik <- -Inf
 
-      stat <- StatStMoE(modelStMoE)
-      stat$univStMoEpdf(modelStMoE, param, phiBeta, phiAlpha)
+      stat <- StatStMoE(paramStMoE = param)
+      stat$univStMoEpdf(param)
 
       while (!converge && (iter <= max_iter)) {
-        stat$EStep(modelStMoE, param, phiBeta, phiAlpha)
+        stat$EStep(param)
 
-        reg_irls <- param$MStep(modelStMoE, stat, phiAlpha, phiBeta, verbose_IRLS)
+        reg_irls <- param$MStep(stat, verbose_IRLS)
 
         stat$computeLikelihood(reg_irls)
         # FIN EM
@@ -79,8 +80,8 @@ EM <- function(modelStMoE, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbo
 
 
     # FINISH computation of statSolution
-    statSolution$computeStats(modelStMoE, paramSolution, phiBeta, phiAlpha, cpu_time_all)
+    statSolution$computeStats(paramSolution, cpu_time_all)
 
-    return(FittedStMoE(modelStMoE, paramSolution, statSolution))
+    return(ModelStMoE(paramStMoE = paramSolution, statStMoE = statSolution))
 
   }
