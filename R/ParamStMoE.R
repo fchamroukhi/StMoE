@@ -1,3 +1,22 @@
+#' A Reference Class which contains parameters of a MRHLP model.
+#'
+#' ParamMRHLP contains all the parameters of a MRHLP model.
+#'
+#' @field fData [FData][FData] object representing the sample.
+#' @field K The number of mixture components.
+#' @field p The order of the polynomial regression.
+#' @field q The dimension of the logistic regression. For the purpose of
+#' segmentation, it must be set to 1.
+#' @field nu degree of freedom
+#' @field alpha is the parameter vector of the logistic model with \eqn{alpha_K} being the null vector.
+#' @field beta is the vector of regression coefficients of component k,
+#' the updates for each of the expert component parameters consist in analytically solving a weighted
+#' Gaussian linear regression problem.
+#' @field sigma The variances for the \emph{K} mixture component.
+#' @filed lambda skewness parameter
+#' @field delta the skewness parameter lambda (by equivalence delta)
+#' @field nuk degrees of freedom
+#' @seealso [FData]
 #' @export
 ParamStMoE <- setRefClass(
   "ParamStMoE",
@@ -7,7 +26,7 @@ ParamStMoE <- setRefClass(
     phiAlpha = "list",
 
     K = "numeric",
-    # number of regimes
+    # number of components
     p = "numeric",
     # dimension of beta (order of polynomial regression)
     q = "numeric",
@@ -42,6 +61,9 @@ ParamStMoE <- setRefClass(
     },
 
     initParam = function(try_EM, segmental = FALSE) {
+      "Method to initialize parameters \\code{alpha}, \\code{beta} and
+      \\code{sigma}."
+
       alpha <<- matrix(runif((q + 1) * (K - 1)), nrow = q + 1, ncol = K - 1) #initialisation al??atoire du vercteur param???tre du IRLS
 
       #Initialise the regression parameters (coeffecients and variances):
@@ -99,6 +121,8 @@ ParamStMoE <- setRefClass(
     },
 
     MStep = function(statStMoE, verbose_IRLS) {
+      "Method used in the EM algorithm to learn the parameters of the StMoE model
+      based on statistics provided by \\code{statStMoE}."
       # M-Step
       res_irls <- IRLS(phiAlpha$XBeta, statStMoE$tik, ones(nrow(statStMoE$tik), 1), alpha, verbose_IRLS)
       # statStMoE$piik <- res_irls$piik

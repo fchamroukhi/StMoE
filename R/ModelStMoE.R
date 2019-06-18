@@ -1,3 +1,12 @@
+#' A Reference Class which represents a fitted StMoE model.
+#'
+#' ModelMRHLP represents a [StMoE][ModelStMoE] model for which parameters have
+#' been estimated.
+#'
+#' @usage NULL
+#' @field paramMRHLP A [ParamStMoE][ParamStMoE] object. It contains the estimated values of the parameters.
+#' @field statMRHLP A [StatStMoE][StatStMoE] object. It contains all the statistics associated to the StMoE model.
+#' @seealso [ParamStMoE], [StatStMoE]
 #' @export
 ModelStMoE <- setRefClass(
   "ModelStMoE",
