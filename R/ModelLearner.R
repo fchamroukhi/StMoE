@@ -39,7 +39,7 @@
 #' @return EM returns an object of class [ModelStMoE][ModelStMoE].
 #' @seealso [ModelStMoE], [ParamStMoE], [StatStMoE]
 #' @export
-emStMoE <- function(X, Y, K, p, q = 1, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE, verbose_IRLS = FALSE) {
+emStMoE <- function(X, Y, K, p = 3, q = 1, n_tries = 1, max_iter = 1500, threshold = 1e-6, verbose = FALSE, verbose_IRLS = FALSE) {
 
     fData <- FData(X, Y)
 

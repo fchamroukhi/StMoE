@@ -31,7 +31,7 @@ library(StMoE)
 
 # Introduction
 
-**StMoE** is a contributed R package for segmentation. It provides functions for parameter estimation via the EM algorithm. This document gives a quick tour of **StMoE** (version `r packageVersion("StMoE")`) functionalities. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
+**StMoE** is a R package for segmentation. It provides functions for parameter estimation via the EM algorithm. This document gives a quick tour of **StMoE** (version `r packageVersion("StMoE")`) functionalities. It was written in R Markdown, using the [knitr](https://cran.r-project.org/package=knitr) package for production. 
 See `help(package="StMoE")` for further details and references provided by `citation("StMoE")`.
 
 # Load data
@@ -43,9 +43,9 @@ data("simulatedstructureddata")
 # Set up StMoE model parameters
 
 ```{r}
-K <- 2 # number of regimes (mixture components)
-p <- 1 # dimension of beta (order of the polynomial regressors)
-q <- 1 # dimension of w (order of the logistic regression: to be set to 1 for segmentation)
+K <- 2 # Number of regimes (mixture components)
+p <- 1 # Dimension of beta (order of the polynomial regressors)
+q <- 1 # Dimension of w (order of the logistic regression: to be set to 1 for segmentation)
 
 ```
 
@@ -62,12 +62,12 @@ verbose_IRLS <- FALSE
 # Estimation
 
 ```{r}
-solution <- emStMoE(simulatedstructureddata$X, matrix(simulatedstructureddata$Y), K, p, q, n_tries, max_iter, threshold, verbose, verbose_IRLS)
+stmoe <- emStMoE(simulatedstructureddata$X, matrix(simulatedstructureddata$Y), K, p, q, n_tries, max_iter, threshold, verbose, verbose_IRLS)
 ```
 
 
 # Plots
 
 ```{r}
-solution$plot()
+stmoe$plot()
 ```
