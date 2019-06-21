@@ -15,44 +15,61 @@ ModelStMoE <- setRefClass(
     statStMoE = "StatStMoE"
   ),
   methods = list(
-    plot = function() {
+    plot = function(what = c("meancurve", "confregions", "clusters", "loglikelihood")) {
 
-      plot.default(paramStMoE$fData$X, paramStMoE$fData$Y, ylab = "y", xlab = "x", cex = 0.7, pch = 3)
-      title(main = "Estimated mean and experts")
-      for (k in 1:paramStMoE$K) {
-        lines(paramStMoE$fData$X, statStMoE$Ey_k[, k], col = "red", lty = "dotted", lwd = 1.5)
-      }
-      lines(paramStMoE$fData$X, statStMoE$Ey, col = "red", lwd = 1.5)
+      what <- match.arg(what, several.ok = TRUE)
 
+      oldpar <- par()[c("mfrow", "mai", "mgp")]
+      on.exit(par(oldpar), add = TRUE)
 
       colorsvec = rainbow(paramStMoE$K)
-      plot.default(paramStMoE$fData$X, statStMoE$piik[, 1], type = "l", xlab = "x", ylab = "Mixing probabilities", col = colorsvec[1])
-      title(main = "Mixing probabilities")
-      for (k in 2:paramStMoE$K) {
-        lines(paramStMoE$fData$X, statStMoE$piik[, k], col = colorsvec[k])
+
+      if (any(what == "meancurve")) {
+        par(mfrow = c(2, 1), mai = c(0.6, 1, 0.5, 0.5), mgp = c(2, 1, 0))
+        plot.default(paramStMoE$fData$X, paramStMoE$fData$Y, ylab = "y", xlab = "x", cex = 0.7, pch = 3)
+        title(main = "Estimated mean and experts")
+        for (k in 1:paramStMoE$K) {
+          lines(paramStMoE$fData$X, statStMoE$Ey_k[, k], col = "red", lty = "dotted", lwd = 1.5)
+        }
+        lines(paramStMoE$fData$X, statStMoE$Ey, col = "red", lwd = 1.5)
+
+        plot.default(paramStMoE$fData$X, statStMoE$piik[, 1], type = "l", xlab = "x", ylab = "Mixing probabilities", col = colorsvec[1])
+        title(main = "Mixing probabilities")
+        for (k in 2:paramStMoE$K) {
+          lines(paramStMoE$fData$X, statStMoE$piik[, k], col = colorsvec[k])
+        }
       }
 
-      # Data, Estimated mean functions and 2*sigma confidence regions
-      plot.default(paramStMoE$fData$X, paramStMoE$fData$Y, ylab = "y", xlab = "x", cex = 0.7, pch = 3)
-      title(main = "Estimated mean and confidence regions")
-      lines(paramStMoE$fData$X, statStMoE$Ey, col = "red", lwd = 1.5)
-      lines(paramStMoE$fData$X, statStMoE$Ey - 2 * sqrt(statStMoE$Vary), col = "red", lty = "dotted", lwd = 1.5)
-      lines(paramStMoE$fData$X, statStMoE$Ey + 2 * sqrt(statStMoE$Vary), col = "red", lty = "dotted", lwd = 1.5)
-
-      # Obtained partition
-      plot.default(paramStMoE$fData$X, paramStMoE$fData$Y, ylab = "y", xlab = "x", cex = 0.7, pch = 3)
-      title(main = "Estimated experts and clusters")
-      for (k in 1:paramStMoE$K) {
-        lines(paramStMoE$fData$X, statStMoE$Ey_k[, k], col = colorsvec[k], lty = "dotted", lwd = 1.5)
-      }
-      for (k in 1:paramStMoE$K) {
-        index <- statStMoE$klas == k
-        points(paramStMoE$fData$X[index], paramStMoE$fData$Y[index, ], col = colorsvec[k], cex = 0.7, pch = 3)
+      if (any(what == "confregions")) {
+        # Data, Estimated mean functions and 2*sigma confidence regions
+        par(mfrow = c(1, 1), mai = c(0.6, 1, 0.5, 0.5), mgp = c(2, 1, 0))
+        plot.default(paramStMoE$fData$X, paramStMoE$fData$Y, ylab = "y", xlab = "x", cex = 0.7, pch = 3)
+        title(main = "Estimated mean and confidence regions")
+        lines(paramStMoE$fData$X, statStMoE$Ey, col = "red", lwd = 1.5)
+        lines(paramStMoE$fData$X, statStMoE$Ey - 2 * sqrt(statStMoE$Vary), col = "red", lty = "dotted", lwd = 1.5)
+        lines(paramStMoE$fData$X, statStMoE$Ey + 2 * sqrt(statStMoE$Vary), col = "red", lty = "dotted", lwd = 1.5)
       }
 
-      # Observed data log-likelihood
-      plot.default(unlist(statStMoE$stored_loglik), type = "l", col = "blue", xlab = "EM iteration number", ylab = "Observed data log-likelihood")
-      title(main = "Log-Likelihood")
+      if (any(what == "clusters")) {
+        # Obtained partition
+        par(mfrow = c(1, 1), mai = c(0.6, 1, 0.5, 0.5), mgp = c(2, 1, 0))
+        plot.default(paramStMoE$fData$X, paramStMoE$fData$Y, ylab = "y", xlab = "x", cex = 0.7, pch = 3)
+        title(main = "Estimated experts and clusters")
+        for (k in 1:paramStMoE$K) {
+          lines(paramStMoE$fData$X, statStMoE$Ey_k[, k], col = colorsvec[k], lty = "dotted", lwd = 1.5)
+        }
+        for (k in 1:paramStMoE$K) {
+          index <- statStMoE$klas == k
+          points(paramStMoE$fData$X[index], paramStMoE$fData$Y[index, ], col = colorsvec[k], cex = 0.7, pch = 3)
+        }
+      }
+
+      if (any(what == "loglikelihood")) {
+        # Observed data log-likelihood
+        par(mfrow = c(1, 1), mai = c(0.6, 1, 0.5, 0.5), mgp = c(2, 1, 0))
+        plot.default(unlist(statStMoE$stored_loglik), type = "l", col = "blue", xlab = "EM iteration number", ylab = "Observed data log-likelihood")
+        title(main = "Log-Likelihood")
+      }
 
     }
   )
