@@ -6,15 +6,15 @@
 \alias{ModelStMoE}
 \title{A Reference Class which represents a fitted StMoE model.}
 \description{
-ModelMRHLP represents a \link[=ModelStMoE]{StMoE} model for which parameters have
+ModelStMoE represents a \link[=ModelStMoE]{StMoE} model for which parameters have
 been estimated.
 }
 \section{Fields}{
 
 \describe{
-\item{\code{paramMRHLP}}{A \link{ParamStMoE} object. It contains the estimated values of the parameters.}
+\item{\code{param}}{A \link{ParamStMoE} object. It contains the estimated values of the parameters.}
 
-\item{\code{statMRHLP}}{A \link{StatStMoE} object. It contains all the statistics associated to the StMoE model.}
+\item{\code{stat}}{A \link{StatStMoE} object. It contains all the statistics associated to the StMoE model.}
 }}
 
 
