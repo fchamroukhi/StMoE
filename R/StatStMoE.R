@@ -30,8 +30,6 @@
 #' degree of freedom of the StMoE model.
 #' @field AIC Numeric. Value of the AIC (Akaike Information Criterion)
 #' criterion. The formula is \eqn{AIC = log\_lik - nu}{AIC = log\_lik - nu}.
-#' @field cpu_time Numeric. Average executon time of a EM step.
-#'
 #' @field log_piik_fik Matrix of size \eqn{(n, K)} giving the values of the
 #' logarithm of the joint probability
 #' \eqn{P(Y_{i}, \ zi = k)}{P(Yi, zi = k)}, \eqn{i = 1,\dots,n}.
@@ -41,12 +39,12 @@
 #' @field tik Matrix of size \eqn{(n, K)} giving the posterior probability that
 #' \eqn{Y_{i}}{Yi} originates from the \eqn{k}-th regression model
 #' \eqn{P(zi = k | Y, W, \beta)}.
-#' @field wik
-#' @field dik
+#' @field wik To define.
+#' @field dik To define.
 #' @field stme_pdf skew-t mixture of experts density
-#' @field E1ik
-#' @field E2ik
-#' @field E3ik
+#' @field E1ik To define.
+#' @field E2ik To define.
+#' @field E3ik To define.
 #' @seealso [ParamStMoE], [FData]
 #' @export
 StatStMoE <- setRefClass(
@@ -66,7 +64,6 @@ StatStMoE <- setRefClass(
     BIC = "numeric",
     ICL = "numeric",
     AIC = "numeric",
-    cpu_time = "numeric",
     log_piik_fik = "matrix",
     log_sum_piik_fik = "matrix",
     tik = "matrix",
@@ -92,7 +89,6 @@ StatStMoE <- setRefClass(
       BIC <<- -Inf
       ICL <<- -Inf
       AIC <<- -Inf
-      cpu_time <<- Inf
       log_piik_fik <<- matrix(0, paramStMoE$fData$n, paramStMoE$K)
       log_sum_piik_fik <<- matrix(NA, paramStMoE$fData$n, 1)
       tik <<- matrix(0, paramStMoE$fData$n, paramStMoE$K)
@@ -143,8 +139,7 @@ StatStMoE <- setRefClass(
     #######
     # compute the final solution stats
     #######
-    computeStats = function(paramStMoE, cpu_time_all) {
-      cpu_time <<- mean(cpu_time_all)
+    computeStats = function(paramStMoE) {
 
       Xi_nuk = sqrt(paramStMoE$nuk/pi) * (gamma(paramStMoE$nuk/2 - 1/2)) / (gamma(paramStMoE$nuk/2));
 

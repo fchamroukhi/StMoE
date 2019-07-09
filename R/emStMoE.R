@@ -46,12 +46,10 @@ emStMoE <- function(X, Y, K, p = 3, q = 1, n_tries = 1, max_iter = 1500, thresho
     top <- 0
     try_EM <- 0
     best_loglik <- -Inf
-    cpu_time_all <- c()
 
     while (try_EM < n_tries) {
       try_EM <- try_EM + 1
       message("EM try nr ", try_EM)
-      time <- Sys.time()
 
       # Initializations
       param <- ParamStMoE$new(fData = fData, K = K, p = p, q = q)
@@ -95,9 +93,6 @@ emStMoE <- function(X, Y, K, p = 3, q = 1, n_tries = 1, max_iter = 1500, thresho
         stat$stored_loglik[iter] <- stat$log_lik
       }# FIN EM LOOP
 
-
-      cpu_time_all[try_EM] <- Sys.time() - time
-
       # end of computation of all estimates (param and stat)
 
       if (stat$log_lik > best_loglik) {
@@ -120,7 +115,7 @@ emStMoE <- function(X, Y, K, p = 3, q = 1, n_tries = 1, max_iter = 1500, thresho
 
 
     # FINISH computation of statSolution
-    statSolution$computeStats(paramSolution, cpu_time_all)
+    statSolution$computeStats(paramSolution)
 
     return(ModelStMoE(param = paramSolution, stat = statSolution))
 

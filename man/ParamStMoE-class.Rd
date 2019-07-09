@@ -30,6 +30,8 @@ Gaussian linear regression problem.}
 
 \item{\code{sigma}}{The variances for the \emph{K} mixture component.}
 
+\item{\code{lambda}}{skewness parameter}
+
 \item{\code{delta}}{the skewness parameter lambda (by equivalence delta)}
 
 \item{\code{nuk}}{degrees of freedom}

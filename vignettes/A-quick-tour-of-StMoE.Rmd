@@ -53,7 +53,7 @@ q <- 1 # Dimension of w (order of the logistic regression: to be set to 1 for se
 
 ```{r}
 n_tries <- 1
-max_iter = 1500
+max_iter <- 1500
 threshold <- 1e-5
 verbose <- TRUE
 verbose_IRLS <- FALSE
@@ -64,7 +64,6 @@ verbose_IRLS <- FALSE
 ```{r}
 stmoe <- emStMoE(simulatedstructureddata$X, matrix(simulatedstructureddata$Y), K, p, q, n_tries, max_iter, threshold, verbose, verbose_IRLS)
 ```
-
 
 # Plots
 

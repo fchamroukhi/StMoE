@@ -13,7 +13,7 @@
 #' the updates for each of the expert component parameters consist in analytically solving a weighted
 #' Gaussian linear regression problem.
 #' @field sigma The variances for the \emph{K} mixture component.
-#' @filed lambda skewness parameter
+#' @field lambda skewness parameter
 #' @field delta the skewness parameter lambda (by equivalence delta)
 #' @field nuk degrees of freedom
 #' @seealso [FData]

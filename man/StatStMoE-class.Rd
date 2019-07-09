@@ -52,8 +52,6 @@ degree of freedom of the StMoE model.}
 \item{\code{AIC}}{Numeric. Value of the AIC (Akaike Information Criterion)
 criterion. The formula is \eqn{AIC = log\_lik - nu}{AIC = log\_lik - nu}.}
 
-\item{\code{cpu_time}}{Numeric. Average executon time of a EM step.}
-
 \item{\code{log_piik_fik}}{Matrix of size \eqn{(n, K)} giving the values of the
 logarithm of the joint probability
 \eqn{P(Y_{i}, \ zi = k)}{P(Yi, zi = k)}, \eqn{i = 1,\dots,n}.}
@@ -66,7 +64,17 @@ P(Yi, zi = k)}, \eqn{i = 1,\dots,n}.}
 \eqn{Y_{i}}{Yi} originates from the \eqn{k}-th regression model
 \eqn{P(zi = k | Y, W, \beta)}.}
 
+\item{\code{wik}}{To define.}
+
+\item{\code{dik}}{To define.}
+
 \item{\code{stme_pdf}}{skew-t mixture of experts density}
+
+\item{\code{E1ik}}{To define.}
+
+\item{\code{E2ik}}{To define.}
+
+\item{\code{E3ik}}{To define.}
 }}
 
 \section{Methods}{
