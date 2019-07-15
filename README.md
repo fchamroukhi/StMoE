@@ -1,11 +1,11 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-## Overview
-
 <!-- badges: start -->
 
 <!-- badges: end -->
+
+## Overview
 
 User-friendly and flexible algorithm modelling, sampling, inference, and
 clustering heterogeneous data with the Skew-t Mixture-of-Experts (StMoE)

@@ -12,10 +12,11 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-"
 )
 ```
-## Overview
 
 <!-- badges: start -->
 <!-- badges: end -->
+
+## Overview
 
 User-friendly and flexible algorithm modelling, sampling, inference, and clustering heterogeneous data with the Skew-t Mixture-of-Experts (StMoE) model.
 
