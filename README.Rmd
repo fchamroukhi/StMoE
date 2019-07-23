@@ -16,13 +16,16 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-## Overview
+# Overview
 
-User-friendly and flexible algorithm modelling, sampling, inference, and clustering heterogeneous data with the Skew-t Mixture-of-Experts (StMoE) model.
+User-friendly and flexible algorithm modelling, sampling, inference, and 
+clustering heterogeneous data with the Skew-t Mixture-of-Experts (StMoE) 
+model.
 
-## Installation
+# Installation
 
-You can install the development version of StMoE from [GitHub](https://github.com/) with:
+You can install the development version of StMoE from [GitHub](https://github.com/)
+with:
 
 ```{r, eval = FALSE}
 # install.packages("devtools")
@@ -44,11 +47,14 @@ Use the following command to display vignettes:
 browseVignettes("StMoE")
 ```
 
-## Usage
+# Usage
 
 ```{r, message = FALSE}
 library(StMoE)
+```
 
+```{r, message = FALSE}
+# Application to a toy data set
 data("simulatedstructureddata")
 
 K <- 2 # Number of regimes (mixture components)

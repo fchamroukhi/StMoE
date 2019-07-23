@@ -30,6 +30,7 @@ LinkingTo:
 Collate:
     StMoE-package.R
     RcppExports.R
+    logsumexp.R
     utils.R
     FData.R
     ParamStMoE.R

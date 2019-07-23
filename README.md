@@ -5,13 +5,13 @@
 
 <!-- badges: end -->
 
-## Overview
+# Overview
 
 User-friendly and flexible algorithm modelling, sampling, inference, and
 clustering heterogeneous data with the Skew-t Mixture-of-Experts (StMoE)
 model.
 
-## Installation
+# Installation
 
 You can install the development version of StMoE from
 [GitHub](https://github.com/) with:
@@ -37,11 +37,14 @@ Use the following command to display vignettes:
 browseVignettes("StMoE")
 ```
 
-## Usage
+# Usage
 
 ``` r
 library(StMoE)
+```
 
+``` r
+# Application to a toy data set
 data("simulatedstructureddata")
 
 K <- 2 # Number of regimes (mixture components)
@@ -60,4 +63,4 @@ stmoe <- emStMoE(simulatedstructureddata$X, matrix(simulatedstructureddata$Y),
 stmoe$plot()
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-5-2.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-5-3.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-5-4.png" style="display: block; margin: auto;" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-6-2.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-6-3.png" style="display: block; margin: auto;" /><img src="man/figures/README-unnamed-chunk-6-4.png" style="display: block; margin: auto;" />
