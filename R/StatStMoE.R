@@ -1,51 +1,53 @@
 #' A Reference Class which contains statistics of a StMoE model.
 #'
-#' StatMRHLP contains all the parameters of a [StMoE][ParamStMoE] model.
+#' StatStMoE contains all the statistics associated to a [StMoE][ParamStMoE]
+#' model. It mainly includes the E-Step of the ECM algorithm calculating the
+#' posterior distribution of the hidden variables, as well as the calculation of
+#' the log-likelhood.
 #'
 #' @field piik Matrix of size \eqn{(n, K)} representing the probabilities
-#'   \eqn{P(zi = k; W) = P(z_{ik} = 1; W)}{P(zi = k; W) = P(z_ik = 1; W)} of the
-#'   latent variable \eqn{zi,\ i = 1,\dots,m}{zi, i = 1,\dots,n}.
+#'   \eqn{\pi_{k}(x_{i}; \boldsymbol{\Psi}) = P(z_{i} = k | \boldsymbol{x};
+#'   \Psi)}{\pi_{k}(x_{i}; \Psi) = P(z_{i} = k | x; \Psi)} of the latent
+#'   variable \eqn{z_{i}, i = 1,\dots,n}.
 #' @field z_ik Hard segmentation logical matrix of dimension \eqn{(n, K)}
-#'   obtained by the Maximum a posteriori (MAP) rule: \eqn{z_{ik} = 1 \
-#'   \textrm{if} \ z_{ik} = \textrm{arg} \ \textrm{max}_{k} \ P(z_i = k | Y, W,
-#'   \beta);\ 0 \ \textrm{otherwise}}{z_ik = 1 if z_ik = arg max_k P(z_i = k |
-#'   Y, W, \beta); 0 otherwise}, \eqn{k = 1,\dots,K}.
+#'   obtained by the Maximum a posteriori (MAP) rule: \eqn{z\_ik = 1 \
+#'   \textrm{if} \ z\_ik = \textrm{arg} \ \textrm{max}_{s} \ \tau_{is};\ 0 \
+#'   \textrm{otherwise}}{z_ik = 1 if z_ik = arg max_s \tau_{is}; 0 otherwise},
+#'   \eqn{k = 1,\dots,K}.
 #' @field klas Column matrix of the labels issued from `z_ik`. Its elements are
 #'   \eqn{klas(i) = k}, \eqn{k = 1,\dots,K}.
-#' @field Ey_k Matrix of dimension \emph{(n,K)}.
+#' @field tik Matrix of size \eqn{(n, K)} giving the posterior probability
+#'   \eqn{\tau_{ik}}{\tauik} that the observation \eqn{y_{i}}{yi} originates
+#'   from the \eqn{k}-th expert.
+#' @field Ey_k Matrix of dimension \emph{(n, K)} giving the estimated means of
+#'   the experts.
 #' @field Ey Column matrix of dimension \emph{n}.
-#' @field Var_yk Column matrix of dimension \emph{K}.
-#' @field Var_y Column matrix of dimension \emph{n}.
-#' @field log\_lik Numeric. Log-likelihood of the StMoE model.
-#' @field com_loglik Numeric. Complete log-likelihood of the StMoE model.
+#' @field Var_yk Column matrix of dimension \emph{K} giving the estimated means
+#'   of the experts.
+#' @field Vary Column matrix of dimension \emph{n} giving the estimated variance
+#'   of the response.
+#' @field loglik Numeric. Observed-data log-likelihood of the StMoE model.
+#' @field com_loglik Numeric. Complete-data log-likelihood of the StMoE model.
 #' @field stored_loglik Numeric vector. Stored values of the log-likelihood at
-#'   each EM iteration.
-#' @field BIC Numeric. Value of the BIC (Bayesian Information Criterion)
-#'   criterion. The formula is \eqn{BIC = log\_lik - nu \times \textrm{log}(n) /
-#'   2}{BIC = log\_lik - nu x log(n) / 2} with \emph{nu} the degree of freedom
-#'   of the StMoE model.
-#' @field ICL Numeric. Value of the ICL (Integrated Completed Likelihood)
-#'   criterion. The formula is \eqn{ICL = com\_loglik - nu \times
-#'   \textrm{log}(n) / 2}{ICL = com_loglik - nu x log(n) / 2} with \emph{nu} the
-#'   degree of freedom of the StMoE model.
-#' @field AIC Numeric. Value of the AIC (Akaike Information Criterion)
-#'   criterion. The formula is \eqn{AIC = log\_lik - nu}{AIC = log\_lik - nu}.
+#'   each ECM iteration.
+#' @field BIC Numeric. Value of BIC (Bayesian Information Criterion).
+#' @field ICL Numeric. Value of ICL (Integrated Completed Likelihood).
+#' @field AIC Numeric. Value of AIC (Akaike Information Criterion).
 #' @field log_piik_fik Matrix of size \eqn{(n, K)} giving the values of the
-#'   logarithm of the joint probability \eqn{P(Y_{i}, \ zi = k)}{P(Yi, zi = k)},
+#'   logarithm of the joint probability \eqn{P(y_{i}, \ z_{i} = k |
+#'   \boldsymbol{x}, \boldsymbol{\Psi})}{P(y_{i}, z_{i} = k | x, \Psi)}, \eqn{i
+#'   = 1,\dots,n}.
+#' @field log_sum_piik_fik Column matrix of size \emph{m} giving the values of
+#'   \eqn{\textrm{log} \sum_{k = 1}^{K} P(y_{i}, \ z_{i} = k | \boldsymbol{x},
+#'   \boldsymbol{\Psi})}{log \sum_{k = 1}^{K} P(y_{i}, z_{i} = k | x, \Psi)},
 #'   \eqn{i = 1,\dots,n}.
-#' @field log_sum_piik_fik Column matrix of size \emph{n} giving the values of
-#'   \eqn{\sum_{k = 1}^{K} \textrm{log} P(Y_{i}, \ zi = k)}{\sum_{k = 1}^{K} log
-#'   P(Yi, zi = k)}, \eqn{i = 1,\dots,n}.
-#' @field tik Matrix of size \eqn{(n, K)} giving the posterior probability that
-#'   \eqn{Y_{i}}{Yi} originates from the \eqn{k}-th regression model \eqn{P(zi =
-#'   k | Y, W, \beta)}.
-#' @field wik To define.
-#' @field dik To define.
-#' @field stme_pdf skew-t mixture of experts density
-#' @field E1ik To define.
-#' @field E2ik To define.
-#' @field E3ik To define.
-#' @seealso [ParamStMoE], [FData]
+#' @field dik It represents the value of \eqn{d_{ik}}{dik}.
+#' @field wik Conditional expectations \eqn{w_{ik}}{wik}.
+#' @field E1ik Conditional expectations \eqn{e_{1,ik}}{e1ik}.
+#' @field E2ik Conditional expectations \eqn{e_{2,ik}}{e2ik}.
+#' @field E3ik Conditional expectations \eqn{e_{3,ik}}{e3ik}.
+#' @field stme_pdf Skew-t mixture of experts density.
+#' @seealso [ParamStMoE]
 #' @export
 StatStMoE <- setRefClass(
   "StatStMoE",
@@ -75,49 +77,41 @@ StatStMoE <- setRefClass(
   ),
   methods = list(
     initialize = function(paramStMoE = ParamStMoE()) {
-      piik <<- matrix(NA, paramStMoE$fData$n, paramStMoE$K)
-      z_ik <<- matrix(NA, paramStMoE$fData$n, paramStMoE$K)
-      klas <<- matrix(NA, paramStMoE$fData$n, 1)
-      Ey_k <<- matrix(NA, paramStMoE$fData$n, paramStMoE$K)
-      Ey <<- matrix(NA, paramStMoE$fData$n, 1)
+      piik <<- matrix(NA, paramStMoE$n, paramStMoE$K)
+      z_ik <<- matrix(NA, paramStMoE$n, paramStMoE$K)
+      klas <<- matrix(NA, paramStMoE$n, 1)
+      Ey_k <<- matrix(NA, paramStMoE$n, paramStMoE$K)
+      Ey <<- matrix(NA, paramStMoE$n, 1)
       Var_yk <<- matrix(NA, 1, paramStMoE$K)
-      Vary <<- matrix(NA, paramStMoE$fData$n, 1)
+      Vary <<- matrix(NA, paramStMoE$n, 1)
       log_lik <<- -Inf
       com_loglik <<- -Inf
       stored_loglik <<- numeric()
       BIC <<- -Inf
       ICL <<- -Inf
       AIC <<- -Inf
-      log_piik_fik <<- matrix(0, paramStMoE$fData$n, paramStMoE$K)
-      log_sum_piik_fik <<- matrix(NA, paramStMoE$fData$n, 1)
-      tik <<- matrix(0, paramStMoE$fData$n, paramStMoE$K)
-      wik <<- matrix(0, paramStMoE$fData$m * paramStMoE$fData$n, paramStMoE$K)
-      dik <<- matrix(0, paramStMoE$fData$m * paramStMoE$fData$n, paramStMoE$K)
-      stme_pdf <<- matrix(0, paramStMoE$fData$n, 1)
-      E1ik <<- matrix(0, paramStMoE$fData$m * paramStMoE$fData$n, paramStMoE$K)
-      E2ik <<- matrix(0, paramStMoE$fData$m * paramStMoE$fData$n, paramStMoE$K)
-      E3ik <<- matrix(0, paramStMoE$fData$m * paramStMoE$fData$n, paramStMoE$K)
+      log_piik_fik <<- matrix(0, paramStMoE$n, paramStMoE$K)
+      log_sum_piik_fik <<- matrix(NA, paramStMoE$n, 1)
+      tik <<- matrix(0, paramStMoE$n, paramStMoE$K)
+      wik <<- matrix(0, paramStMoE$n, paramStMoE$K)
+      dik <<- matrix(0, paramStMoE$n, paramStMoE$K)
+      stme_pdf <<- matrix(0, paramStMoE$n, 1)
+      E1ik <<- matrix(0, paramStMoE$n, paramStMoE$K)
+      E2ik <<- matrix(0, paramStMoE$n, paramStMoE$K)
+      E3ik <<- matrix(0, paramStMoE$n, paramStMoE$K)
     },
 
     MAP = function() {
-      "
-      calcule une partition d'un echantillon par la regle du Maximum A Posteriori ?? partir des probabilites a posteriori
-      Entrees : post_probas , Matrice de dimensions [n x K] des probabibiltes a posteriori (matrice de la partition floue)
-      n : taille de l'echantillon
-      K : nombres de classes
-      klas(i) = arg   max (post_probas(i,k)) , for all i=1,...,n
-      1<=k<=K
-      = arg   max  p(zi=k|xi;theta)
-      1<=k<=K
-      = arg   max  p(zi=k;theta)p(xi|zi=k;theta)/sum{l=1}^{K}p(zi=l;theta) p(xi|zi=l;theta)
-      1<=k<=K
-      Sorties : classes : vecteur collones contenant les classe (1:K)
-      Z : Matrice de dimension [nxK] de la partition dure : ses elements sont zik, avec zik=1 si xi
-      appartient et la classe k (au sens du MAP) et zero sinon.
-      "
-      N <- nrow(piik)
-      K <- ncol(piik)
-      ikmax <- max.col(piik)
+      "MAP calculates values of the fields \\code{z_ik} and \\code{klas}
+      by applying the Maximum A Posteriori Bayes allocation rule.
+
+      \\eqn{z_{ik} = 1 \\ \\textrm{if} \\ k = \\textrm{arg} \\ \\textrm{max}_{s}
+      \\ \\tau_{is};\\ 0 \\ \\textrm{otherwise}}{
+      z_{ik} = 1 if z_ik = arg max_{s} \\tau_{is}; 0 otherwise}"
+
+      N <- nrow(tik)
+      K <- ncol(tik)
+      ikmax <- max.col(tik)
       ikmax <- matrix(ikmax, ncol = 1)
       z_ik <<-
         ikmax %*% ones(1, K) == ones(N, 1) %*% (1:K) # partition_MAP
@@ -128,107 +122,138 @@ StatStMoE <- setRefClass(
     },
 
     computeLikelihood = function(reg_irls) {
+      "Method to compute the log-likelihood. \\code{reg_irls} is the value of
+      the regularization part in the IRLS algorithm."
 
       log_lik <<- sum(log_sum_piik_fik) + reg_irls
 
     },
 
     computeStats = function(paramStMoE) {
+      "Method used in the ECM algorithm to compute statistics based on
+      parameters provided by the object \\code{paramStMoE} of class
+      \\link{ParamStMoE}."
 
       Xi_nuk = sqrt(paramStMoE$nuk / pi) * (gamma(paramStMoE$nuk / 2 - 1 / 2)) / (gamma(paramStMoE$nuk / 2))
 
       # E[yi|xi,zi=k]
-      Ey_k <<- paramStMoE$phiBeta$XBeta[1:paramStMoE$fData$n,] %*% paramStMoE$beta + ones(paramStMoE$fData$n, 1) %*% (paramStMoE$delta * sqrt(paramStMoE$sigma) * Xi_nuk)
+      Ey_k <<- paramStMoE$phiBeta$XBeta[1:paramStMoE$n,] %*% paramStMoE$beta + ones(paramStMoE$n, 1) %*% (paramStMoE$delta * sqrt(paramStMoE$sigma2) * Xi_nuk)
 
       # E[yi|xi]
       Ey <<- matrix(apply(piik * Ey_k, 1, sum))
 
       # Var[yi|xi,zi=k]
-      Var_yk <<- (paramStMoE$nuk / (paramStMoE$nuk - 2) - (paramStMoE$delta ^ 2) * (Xi_nuk ^ 2)) * paramStMoE$sigma
+      Var_yk <<- (paramStMoE$nuk / (paramStMoE$nuk - 2) - (paramStMoE$delta ^ 2) * (Xi_nuk ^ 2)) * paramStMoE$sigma2
 
       # Var[yi|xi]
-      Vary <<- apply(piik * (Ey_k ^ 2 + ones(paramStMoE$fData$n, 1) %*% Var_yk), 1, sum) - Ey ^ 2
+      Vary <<- apply(piik * (Ey_k ^ 2 + ones(paramStMoE$n, 1) %*% Var_yk), 1, sum) - Ey ^ 2
 
       # BIC, AIC and ICL
-      BIC <<- log_lik - (paramStMoE$nu * log(paramStMoE$fData$n * paramStMoE$fData$m) / 2)
-      AIC <<- log_lik - paramStMoE$nu
+      BIC <<- log_lik - (paramStMoE$df * log(paramStMoE$n) / 2)
+      AIC <<- log_lik - paramStMoE$df
 
       ## CL(theta) : complete-data loglikelihood
-      zik_log_piik_fk <- (repmat(z_ik, paramStMoE$fData$m, 1)) * log_piik_fik
+      zik_log_piik_fk <- z_ik * log_piik_fik
       sum_zik_log_fik <- apply(zik_log_piik_fk, 1, sum)
       com_loglik <<- sum(sum_zik_log_fik)
 
-      ICL <<- com_loglik - (paramStMoE$nu * log(paramStMoE$fData$n * paramStMoE$fData$m) / 2)
+      ICL <<- com_loglik - (paramStMoE$df * log(paramStMoE$n) / 2)
 
     },
 
     univStMoEpdf = function(paramStMoE) {
-      piik <<- multinomialLogit(paramStMoE$alpha, paramStMoE$phiAlpha$XBeta, ones(paramStMoE$fData$n, paramStMoE$K), ones(paramStMoE$fData$n, 1))$piik
+      piik <<- multinomialLogit(paramStMoE$alpha, paramStMoE$phiAlpha$XBeta, ones(paramStMoE$n, paramStMoE$K), ones(paramStMoE$n, 1))$piik
 
-      piik_fik <- zeros(paramStMoE$fData$n, paramStMoE$K)
-      dik <<- zeros(paramStMoE$fData$n, paramStMoE$K)
-      mik <- zeros(paramStMoE$fData$n, paramStMoE$K)
+      piik_fik <- zeros(paramStMoE$n, paramStMoE$K)
+      dik <<- zeros(paramStMoE$n, paramStMoE$K)
+      mik <- zeros(paramStMoE$n, paramStMoE$K)
 
       for (k in (1:paramStMoE$K)) {
-        dik[, k] <<- (paramStMoE$fData$Y - paramStMoE$phiBeta$XBeta %*% paramStMoE$beta[, k]) / paramStMoE$sigma[k]
-        mik[, k] <- paramStMoE$lambda[k] %*% dik[, k] * sqrt(paramStMoE$nuk[k] + 1) / (paramStMoE$nuk[k] + dik[, k] ^
-                                                                               2)
-        piik_fik[, k] <- piik[, k] * (2 / paramStMoE$sigma[k]) * dt(dik[, k], paramStMoE$nuk[k]) * pt(mik[, k], paramStMoE$nuk[k] + 1)
+        dik[, k] <<- (paramStMoE$Y - paramStMoE$phiBeta$XBeta %*% paramStMoE$beta[, k]) / sqrt(paramStMoE$sigma2[k])
+        mik[, k] <- paramStMoE$lambda[k] %*% dik[, k] * sqrt(paramStMoE$nuk[k] + 1) / (paramStMoE$nuk[k] + dik[, k] ^ 2)
+        piik_fik[, k] <- piik[, k] * (2 / sqrt(paramStMoE$sigma2[k])) * dt(dik[, k], paramStMoE$nuk[k]) * pt(mik[, k], paramStMoE$nuk[k] + 1)
       }
 
       stme_pdf <<- matrix(rowSums(piik_fik)) # Skew-t mixture of experts density
     },
 
-    EStep = function(paramStMoE) {
-      "Method used in the EM algorithm to update statistics based on parameters
-      provided by \\code{paramStMoE} (prior and posterior probabilities)."
+    EStep = function(paramStMoE, calcTau = FALSE, calcE1 = FALSE, calcE2 = FALSE, calcE3 = FALSE) {
+      "Method used in the ECM algorithm to update statistics based on parameters
+      provided by the object \\code{paramStMoE} of class \\link{ParamStMoE}
+      (prior and posterior probabilities)."
 
-      piik <<- multinomialLogit(paramStMoE$alpha, paramStMoE$phiAlpha$XBeta, ones(paramStMoE$fData$n, paramStMoE$K), ones(paramStMoE$fData$n, 1))$piik
+      if (calcTau) {
 
-      piik_fik <- zeros(paramStMoE$fData$m * paramStMoE$fData$n, paramStMoE$K)
+        piik <<- multinomialLogit(paramStMoE$alpha, paramStMoE$phiAlpha$XBeta, ones(paramStMoE$n, paramStMoE$K), ones(paramStMoE$n, 1))$piik
+        piik_fik <- zeros(paramStMoE$n, paramStMoE$K)
+      }
 
-      dik <<- zeros(paramStMoE$fData$m * paramStMoE$fData$n, paramStMoE$K)
-      mik <- zeros(paramStMoE$fData$m * paramStMoE$fData$n, paramStMoE$K)
-      wik <<- zeros(paramStMoE$fData$m * paramStMoE$fData$n, paramStMoE$K)
+      dik <<- zeros(paramStMoE$n, paramStMoE$K)
+      mik <- zeros(paramStMoE$n, paramStMoE$K)
+      wik <<- zeros(paramStMoE$n, paramStMoE$K)
+      Integgtx <- zeros(paramStMoE$n, paramStMoE$K)
 
       for (k in (1:paramStMoE$K)) {
 
-        muk <- paramStMoE$phiBeta$XBeta %*% paramStMoE$beta[, k]
-        sigma2k <- paramStMoE$sigma[k]
-        sigmak <- sqrt(sigma2k)
-        dik[, k] <<- (paramStMoE$fData$Y - muk) / sigmak
+        fx = function(x) {
+          return((psigamma((paramStMoE$nuk[k] + 2) / 2) - psigamma((paramStMoE$nuk[k] + 1) / 2) + log(1 + (x ^ 2) / (paramStMoE$nuk[k])) + ((paramStMoE$nuk[k] + 1) * x ^ 2 - paramStMoE$nuk[k] - 1) / ((paramStMoE$nuk[k] + 1) * (paramStMoE$nuk[k] + 1 + x ^ 2))) * dt(x, paramStMoE$nuk[k] + 1))
+        }
 
-        mik[, k] <- paramStMoE$lambda[k] %*% dik[, k] * sqrt((paramStMoE$nuk[k] + 1) / (paramStMoE$nuk[k] + dik[, k] ^
-                                                                                2))
+
+        muk <- paramStMoE$phiBeta$XBeta %*% paramStMoE$beta[, k]
+        sigmak <- sqrt(paramStMoE$sigma2[k])
+        deltak <- paramStMoE$delta[k]
+
+
+        dik[, k] <<- (paramStMoE$Y - muk) / sigmak
+        mik[, k] <- paramStMoE$lambda[k] %*% dik[, k] * sqrt((paramStMoE$nuk[k] + 1) / (paramStMoE$nuk[k] + dik[, k] ^ 2))
 
         # E[Wi|yi,zik=1]
         wik[, k] <<- ((paramStMoE$nuk[k] + 1) / (paramStMoE$nuk[k] + dik[, k] ^ 2)) * pt(mik[, k] * sqrt((paramStMoE$nuk[k] + 3) / (paramStMoE$nuk[k] + 1)), paramStMoE$nuk[k] + 3) / pt(mik[, k], paramStMoE$nuk[k] + 1)
 
-        # E[Wi Ui |yi,zik=1]
-        deltak <- paramStMoE$delta[k]
 
-        E1ik[, k] <<- deltak * abs(paramStMoE$fData$Y - muk) * wik[, k] +
-          (sqrt(1 - deltak ^ 2) / (pi * stme_pdf)) * ((dik[, k] ^ 2 / (paramStMoE$nuk[k] * (1 - deltak ^ 2)) + 1) ^ (-(paramStMoE$nuk[k] / 2 + 1)))
+        if (calcE1) {
 
-        E2ik[, k] <<- deltak ^ 2 * ((paramStMoE$fData$Y - muk) ^ 2) * wik[, k] +
-          (1 - deltak ^ 2) * sigmak ^ 2 + ((deltak * (paramStMoE$fData$Y - muk) * sqrt(1 - deltak ^ 2)) / (pi * stme_pdf)) * (((dik[, k] ^ 2) / (paramStMoE$nuk[k] * (1 - deltak ^ 2)) + 1) ^ (-(paramStMoE$nuk[k] / 2 + 1)))
+          univStMoEpdf(paramStMoE)
+          # E[Wi Ui |yi,zik=1]
+          E1ik[, k] <<- deltak * abs(paramStMoE$Y - muk) * wik[, k] +
+            (sqrt(1 - deltak ^ 2) / (pi * stme_pdf)) * ((dik[, k] ^ 2 / (paramStMoE$nuk[k] * (1 - deltak ^ 2)) + 1) ^ (-(paramStMoE$nuk[k] / 2 + 1)))
+        }
 
-        Integgtx <- 0
-        E3ik[, k] <<- wik[, k] - log((paramStMoE$nuk[k] + dik[, k] ^ 2) / 2) - (paramStMoE$nuk[k] + 1) / (paramStMoE$nuk[k] + dik[, k] ^ 2) + psigamma((paramStMoE$nuk[k] + 1) / 2) + ((paramStMoE$lambda[k] * dik[, k] * (dik[, k] ^ 2 - 1)) / sqrt((paramStMoE$nuk[k] + 1) * ((paramStMoE$nuk[k] + dik[, k] ^ 2) ^ 3))) * dt(mik[, k], paramStMoE$nuk[k] + 1) / pt(mik[, k], paramStMoE$nuk[k] + 1) + (1 / pt(mik[, k], paramStMoE$nuk[k] + 1)) * Integgtx
+        if (calcE2) {
 
-        # Weighted skew normal linear expert likelihood
-        piik_fik[, k] <- piik[, k] * (2 / sigmak) * dt(dik[, k], paramStMoE$nuk[k]) * pt(mik[, k], paramStMoE$nuk[k] + 1)
+          E2ik[, k] <<- deltak ^ 2 * ((paramStMoE$Y - muk) ^ 2) * wik[, k] +
+            (1 - deltak ^ 2) * sigmak ^ 2 + ((deltak * (paramStMoE$Y - muk) * sqrt(1 - deltak ^ 2)) / (pi * stme_pdf)) * (((dik[, k] ^ 2) / (paramStMoE$nuk[k] * (1 - deltak ^ 2)) + 1) ^ (-(paramStMoE$nuk[k] / 2 + 1)))
+        }
+
+        if (calcE3) {
+
+          Integgtx[, k] <- sapply(mik[, k], function(x) try(integrate(f = fx, lower = -Inf, upper = x)$value, silent = TRUE))
+          E3ik[, k] <<- wik[, k] - log((paramStMoE$nuk[k] + dik[, k] ^ 2) / 2) - (paramStMoE$nuk[k] + 1) / (paramStMoE$nuk[k] + dik[, k] ^ 2) + psigamma((paramStMoE$nuk[k] + 1) / 2) + ((paramStMoE$lambda[k] * dik[, k] * (dik[, k] ^ 2 - 1)) / sqrt((paramStMoE$nuk[k] + 1) * ((paramStMoE$nuk[k] + dik[, k] ^ 2) ^ 3))) * dt(mik[, k], paramStMoE$nuk[k] + 1) / pt(mik[, k], paramStMoE$nuk[k] + 1) + (1 / pt(mik[, k], paramStMoE$nuk[k] + 1)) * Integgtx[, k]
+        }
+
+        if (calcTau) {
+
+          # Weighted skew normal linear expert likelihood
+          piik_fik[, k] <- piik[, k] * (2 / sigmak) * dt(dik[, k], paramStMoE$nuk[k]) * pt(mik[, k], paramStMoE$nuk[k] + 1)
+
+        }
+
       }
 
-      stme_pdf <<- matrix(rowSums(piik_fik)) # Skew-t mixture of experts density
+      if (calcTau) {
 
-      log_piik_fik <<- log(piik_fik)
+        stme_pdf <<- matrix(rowSums(piik_fik)) # Skew-t mixture of experts density
 
-      log_sum_piik_fik <<- matrix(logsumexp(log_piik_fik, 1))
+        log_piik_fik <<- log(piik_fik)
 
-      #E[Zi=k|yi]
-      log_tik <- log_piik_fik - log_sum_piik_fik %*% ones(1, paramStMoE$K)
-      tik <<- exp(log_tik)
+        log_sum_piik_fik <<- matrix(logsumexp(log_piik_fik, 1))
+
+        #E[Zi=k|yi]
+        log_tik <- log_piik_fik - log_sum_piik_fik %*% ones(1, paramStMoE$K)
+        tik <<- exp(log_tik)
+      }
+
     }
   )
 )

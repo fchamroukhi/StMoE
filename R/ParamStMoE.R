@@ -1,166 +1,205 @@
-#' A Reference Class which contains parameters of a MRHLP model.
+#' A Reference Class which contains parameters of a StMoE model.
 #'
-#' ParamMRHLP contains all the parameters of a MRHLP model.
+#' ParamStMoE contains all the parameters of a StMoE model.
 #'
-#' @field fData [FData][FData] object representing the sample.
-#' @field K The number of mixture components.
-#' @field p The order of the polynomial regression.
-#' @field q The dimension of the logistic regression. For the purpose of
-#'   segmentation, it must be set to 1.
-#' @field nu degree of freedom
-#' @field alpha is the parameter vector of the logistic model with \eqn{alpha_K}
-#'   being the null vector.
-#' @field beta is the vector of regression coefficients of component k, the
-#'   updates for each of the expert component parameters consist in analytically
-#'   solving a weighted Gaussian linear regression problem.
-#' @field sigma The variances for the \emph{K} mixture component.
-#' @field lambda skewness parameter
-#' @field delta the skewness parameter lambda (by equivalence delta)
-#' @field nuk degrees of freedom
-#' @seealso [FData]
+#' @field X Numeric vector of length \emph{n} representing the covariates/inputs
+#'   \eqn{x_{1},\dots,x_{n}}.
+#' @field Y Numeric vector of length \emph{n} representing the observed
+#'   response/output \eqn{y_{1},\dots,y_{n}}.
+#' @field n Numeric. Length of the response/output vector `Y`.
+#' @field K The number of experts.
+#' @field p The order of the polynomial regression for the experts.
+#' @field q The order of the logistic regression for the gating network.
+#' @field alpha Parameters of the gating network. \eqn{\boldsymbol{\alpha} =
+#'   (\boldsymbol{\alpha}_{1},\dots,\boldsymbol{\alpha}_{K-1})}{\alpha =
+#'   (\alpha_{1},\dots,\alpha_{K-1})} is a matrix of dimension \eqn{(q + 1, K -
+#'   1)}, with `q` the order of the logistic regression for the gating network.
+#'   `q` is fixed to 1 by default.
+#' @field beta Polynomial regressions coefficients for each expert.
+#'   \eqn{\boldsymbol{\beta} =
+#'   (\boldsymbol{\beta}_{1},\dots,\boldsymbol{\beta}_{K})}{\beta =
+#'   (\beta_{1},\dots,\beta_{K})} is a matrix of dimension \eqn{(p + 1, K)},
+#'   with `p` the order of the polynomial regression. `p` is fixed to 3 by
+#'   default.
+#' @field sigma2 The variances for the `K` mixture components (matrix of size
+#'   \eqn{(1, K)}).
+#' @field lambda The skewness parameters for each experts (matrix of size
+#'   \eqn{(1, K)}).
+#' @field delta delta is equal \eqn{\delta =
+#'   \frac{\lambda}{\sqrt{1+\lambda^2}}}{\delta = \lambda /
+#'   (1+\lambda^2)^(1/2)}.
+#' @field nuk The degree of freedom for the Student distribution for each
+#'   experts (matrix of size \eqn{(1, K)}).
+#' @field df The degree of freedom of the StMoE model representing the
+#'   complexity of the model.
 #' @export
 ParamStMoE <- setRefClass(
   "ParamStMoE",
   fields = list(
-    fData = "FData",
+
+    X = "numeric",
+    Y = "numeric",
+    n = "numeric",
     phiBeta = "list",
     phiAlpha = "list",
 
     K = "numeric", # Number of components
     p = "numeric", # Dimension of beta (order of polynomial regression)
     q = "numeric", # Dimension of w (order of logistic regression)
-    nu = "numeric", # Degree of freedom
+    df = "numeric", # Degree of freedom
 
     alpha = "matrix",
     beta = "matrix",
-    sigma = "matrix",
+    sigma2 = "matrix",
     lambda = "matrix",
     delta = "matrix",
     nuk = "matrix"
   ),
   methods = list(
-    initialize = function(fData = FData(numeric(1), matrix(1)), K = 1, p = 3, q = 1) {
-      fData <<- fData
+    initialize = function(X = numeric(), Y = numeric(1), K = 1, p = 3, q = 1) {
 
-      phiBeta <<- designmatrix(x = fData$X, p = p)
-      phiAlpha <<- designmatrix(x = fData$X, p = q)
+      X <<- X
+      Y <<- Y
+      n <<- length(Y)
+      phiBeta <<- designmatrix(x = X, p = p)
+      phiAlpha <<- designmatrix(x = X, p = q)
 
-      nu <<- (p + q + 3) * K - (q + 1)
+      df <<- (q + 1) * (K - 1) + (p + 1) * K + K + K + K
       K <<- K
       p <<- p
       q <<- q
 
       alpha <<- matrix(0, q + 1, K - 1)
       beta <<- matrix(NA, p + 1, K)
-      sigma <<- matrix(NA, 1, K)
-      lambda <<- matrix(NA, K)
-      delta <<- matrix(NA, K)
+      sigma2 <<- matrix(NA, 1, K)
+      lambda <<- matrix(NA, ncol = K)
+      delta <<- matrix(NA, ncol = K)
+      nuk <<- matrix(NA, ncol = K)
     },
 
-    initParam = function(try_EM, segmental = FALSE) {
+    initParam = function(segmental = FALSE) {
       "Method to initialize parameters \\code{alpha}, \\code{beta} and
-      \\code{sigma}."
+      \\code{sigma2}.
 
-      alpha <<- matrix(runif((q + 1) * (K - 1)), nrow = q + 1, ncol = K - 1)  #random initialization of parameter vector of IRLS
+      If \\code{segmental = TRUE} then \\code{alpha}, \\code{beta} and
+      \\code{sigma2} are initialized by clustering the response \\code{Y}
+      uniformly into \\code{K} contiguous segments. Otherwise, \\code{alpha},
+      \\code{beta} and \\code{sigma2} are initialized by clustering randomly
+      the response \\code{Y} into \\code{K} segments."
 
       # Initialize the regression parameters (coefficents and variances):
-      if (segmental == FALSE) {
+      if (!segmental) {
 
-        Zik <- zeros(fData$n, K)
-
-        klas <- floor(K * matrix(runif(fData$n), fData$n)) + 1
-
-        Zik[klas %*% ones(1, K) == ones(fData$n, 1) %*% seq(K)] <- 1
-
-        Tauik <- Zik
+        klas <- sample(1:K, n, replace = TRUE)
 
         for (k in 1:K) {
 
-          Xk <- phiBeta$XBeta * (sqrt(Tauik[, k] %*% ones(1, p + 1)))
-          yk <- fData$Y * sqrt(Tauik[, k])
+          Xk <- phiBeta$XBeta[klas == k,]
+          yk <- Y[klas == k]
 
           beta[, k] <<- solve(t(Xk) %*% Xk) %*% t(Xk) %*% yk
 
-          sigma[k] <<- sum(Tauik[, k] * ((fData$Y - phiBeta$XBeta %*% beta[, k]) ^ 2)) / sum(Tauik[, k])
+          sigma2[k] <<- sum((yk - Xk %*% beta[, k]) ^ 2) / length(yk)
         }
       } else {# Segmental : segment uniformly the data and estimate the parameters
 
-        nk <- round(fData$n / K) - 1
+        nk <- round(n / K) - 1
+
+        klas <- rep.int(0, n)
 
         for (k in 1:K) {
           i <- (k - 1) * nk + 1
           j <- (k * nk)
-          yk <- matrix(fData$Y[i:j])
+          yk <- matrix(Y[i:j])
           Xk <- phiBeta$XBeta[i:j, ]
 
-          beta[, k] <<- solve(t(Xk) %*% Xk) %*% (t(Xk) %*% yk)
+          beta[, k] <<- solve(t(Xk) %*% Xk, tol = 0) %*% (t(Xk) %*% yk)
 
-          muk <- Xk %*% beta[, k]
+          muk <- Xk %*% beta[, k, drop = FALSE]
 
-          sigma[k] <<- t(yk - muk) %*% (yk - muk) / length(yk)
+          sigma2[k] <<- t(yk - muk) %*% (yk - muk) / length(yk)
+
+          klas[i:j] <- k
         }
       }
 
-      if (try_EM == 1) {
-        alpha <<- rand(q + 1, K - 1)
-      }
+      # Intialize the softmax parameters
+      Z <- matrix(0, nrow = n, ncol = K)
+      Z[klas %*% ones(1, K) == ones(n, 1) %*% seq(K)] <- 1
+      tau <- Z
+      res <- IRLS(phiAlpha$XBeta, tau, ones(nrow(tau), 1), alpha)
+      alpha <<- res$W
 
       # Initialize the skewness parameter Lambdak (by equivalence delta)
-      lambda <<- -.1 + .2 * rand(1, K)
+      lambda <<- -1 + 2 * rand(1, K)
       delta <<- lambda / sqrt(1 + lambda ^ 2)
 
       # Intitialization of the degrees of freedom
-      nuk <<- 1 + 5 * rand(1, K)
+      nuk <<- 50 * rand(1, K)
     },
 
-    MStep = function(statStMoE, verbose_IRLS) {
-      "Method used in the EM algorithm to learn the parameters of the StMoE model
-      based on statistics provided by \\code{statStMoE}."
+    MStep = function(statStMoE, calcAlpha = FALSE, calcBeta = FALSE, calcSigma2 = FALSE, calcLambda = FALSE, calcNu = FALSE, verbose_IRLS = FALSE) {
+      "Method which implements the M-step of the EM algorithm to learn the
+      parameters of the StMoE model based on statistics provided by the object
+      \\code{statStMoE} of class \\link{StatStMoE} (which contains the E-step)."
 
-      res_irls <- IRLS(phiAlpha$XBeta, statStMoE$tik, ones(nrow(statStMoE$tik), 1), alpha, verbose_IRLS)
+      reg_irls <- 0
 
-      reg_irls <- res_irls$reg_irls
+      if (calcAlpha) {
 
-      alpha <<- res_irls$W
+        res_irls <- IRLS(phiAlpha$XBeta, statStMoE$tik, ones(nrow(statStMoE$tik), 1), alpha, verbose_IRLS)
+        reg_irls <- res_irls$reg_irls
+        alpha <<- res_irls$W
+      }
 
-      for (k in 1:K) {
+      # Update the regression coefficients
+      if (calcBeta) {
 
-        # Update the regression coefficients
-        TauikWik <- (statStMoE$tik[, k] * statStMoE$wik[, k]) %*% ones(1, p + 1)
-        TauikX <- phiBeta$XBeta * (statStMoE$tik[, k] %*% ones(1, p + 1))
-        betak <- solve((t(TauikWik * phiBeta$XBeta) %*% phiBeta$XBeta)) %*% (t(TauikX) %*% ((statStMoE$wik[, k] * fData$Y) - (delta[k] * statStMoE$E1ik[, k])))
-
-        beta[, k] <<- betak
-
-        # Update the variances sigma2k
-        sigma2 <- sum(statStMoE$tik[, k] * (statStMoE$wik[, k] * ((fData$Y - phiBeta$XBeta %*% betak) ^ 2) - 2 * delta[k] * statStMoE$E1ik[, k] * (fData$Y - phiBeta$XBeta %*% betak) + statStMoE$E2ik[, k])) / (2 * (1 - delta[k] ^ 2) * sum(statStMoE$tik[, k]))
-
-        if (sigma2 > 0) {
-          sigma[k] <<- sigma2
+        for (k in 1:K) {
+          TauikWik <- (statStMoE$tik[, k] * statStMoE$wik[, k]) %*% ones(1, p + 1)
+          TauikX <- phiBeta$XBeta * (statStMoE$tik[, k] %*% ones(1, p + 1))
+          betak <- solve((t(TauikWik * phiBeta$XBeta) %*% phiBeta$XBeta), tol = 0) %*% (t(TauikX) %*% ((statStMoE$wik[, k] * Y) - (delta[k] * statStMoE$E1ik[, k])))
+          beta[, k] <<- betak
         }
 
-        sigmak <- sqrt(sigma[k])
+      }
 
-        # Update the deltak (the skewness parameter)
-        try(lambda[k] <<- uniroot(f <- function(lmbda) {
-          return((lmbda / sqrt(1 + lmbda ^ 2)) * (1 - (lmbda ^ 2 / (1 + lmbda ^ 2))) *
-                   sum(statStMoE$tik[, k])
-                 + (1 + (lmbda ^ 2 / (1 + lmbda ^ 2))) * sum(statStMoE$tik[, k] * statStMoE$dik[, k] *
-                                                               statStMoE$E1ik[, k] / sigmak)
-                 - (lmbda / sqrt(1 + lmbda ^ 2)) * sum(statStMoE$tik[, k] * (
-                   statStMoE$wik[, k] * (statStMoE$dik[, k] ^ 2) + statStMoE$E2ik[, k] / (sigmak ^
-                                                                                            2)
-                 ))
-          )
-        }, c(-100, 100), extendInt = "yes")$root,
-        silent = TRUE)
+      # Update the variances sigma2k
+      if (calcSigma2) {
 
-        delta[k] <<- lambda[k] / sqrt(1 + lambda[k] ^ 2)
+        for (k in 1:K) {
+          sigma2[k] <<- sum(statStMoE$tik[, k] * (statStMoE$wik[, k] * ((Y - phiBeta$XBeta %*% beta[, k]) ^ 2) - 2 * delta[k] * statStMoE$E1ik[, k] * (Y - phiBeta$XBeta %*% beta[, k]) + statStMoE$E2ik[, k])) / (2 * (1 - delta[k] ^ 2) * sum(statStMoE$tik[, k]))
+        }
+      }
 
-        try(nuk[k] <<- uniroot(f <- function(nnu) {
-          return(-psigamma((nnu) / 2) + log((nnu) / 2) + 1 + sum(statStMoE$tik[, k] * (statStMoE$E3ik[, k] - statStMoE$wik[, k])) /
-                   sum(statStMoE$tik[, k]))
-        }, c(0.1, 200))$root, silent = TRUE)
+      # Update the deltak (the skewness parameter)
+      if (calcLambda) {
+
+        for (k in 1:K) {
+          try(lambda[k] <<- uniroot(f <- function(lmbda) {
+            return((lmbda / sqrt(1 + lmbda ^ 2)) * (1 - (lmbda ^ 2 / (1 + lmbda ^ 2))) *
+                     sum(statStMoE$tik[, k])
+                   + (1 + (lmbda ^ 2 / (1 + lmbda ^ 2))) * sum(statStMoE$tik[, k] * statStMoE$dik[, k] *
+                                                                 statStMoE$E1ik[, k] / sqrt(sigma2[k]))
+                   - (lmbda / sqrt(1 + lmbda ^ 2)) * sum(statStMoE$tik[, k] * (
+                     statStMoE$wik[, k] * (statStMoE$dik[, k] ^ 2) + statStMoE$E2ik[, k] / (sqrt(sigma2[k]) ^ 2)
+                   ))
+            )
+          }, c(-100, 100), extendInt = "yes")$root,
+          silent = TRUE)
+
+          delta[k] <<- lambda[k] / sqrt(1 + lambda[k] ^ 2)
+        }
+      }
+
+      if (calcNu) {
+
+        for (k in 1:K) {
+          try(nuk[k] <<- suppressWarnings(uniroot(f <- function(nnu) {
+            return(-psigamma((nnu) / 2) + log((nnu) / 2) + 1 + sum(statStMoE$tik[, k] * (statStMoE$E3ik[, k] - statStMoE$wik[, k])) /
+                     sum(statStMoE$tik[, k]))
+          }, c(0, 100))$root), silent = TRUE)
+        }
       }
 
       return(reg_irls)
