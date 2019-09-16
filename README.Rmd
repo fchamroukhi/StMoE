@@ -18,9 +18,28 @@ knitr::opts_chunk$set(
 
 # Overview
 
-User-friendly and flexible algorithm modelling, sampling, inference, and 
-clustering heterogeneous data with the Skew-t Mixture-of-Experts (StMoE) 
-model.
+**STMoE** (Skew-t Mixture-of-Experts) provides a flexible and robust modelling 
+framework for heterogenous data with possibly skewed, heavy-tailed 
+distributions and corrupted by atypical observations. **STMoE** consists of a 
+mixture of *K* skew-t expert regressors network (of degree *p*) gated by a 
+softmax gating network (of degree *q*) and is represented by:
+
+* The gating network parameters `alpha`'s of the softmax net.
+* The experts network parameters: The location parameters (regression 
+coefficients) `beta`'s, scale parameters `sigma`'s, the skewness parameters 
+`lambda`'s and the degree of freedom parameters `nu`'s. **STMoE** thus 
+generalises mixtures of (normal, skew-normal, t, and skew-t) distributions and 
+mixtures of regressions with these distributions. For example, when $q=0$, we 
+retrieve mixtures of (skew-t, t-, skew-normal, or normal) regressions, and when
+both $p=0$ and $q=0$, it is a mixture of (skew-t, t-, skew-normal, or normal) 
+distributions. It also reduces to the standard (normal, skew-normal, t, and 
+skew-t) distribution when we only use a single expert ($K=1$).
+
+Model estimation/learning is performed by a dedicated expectation conditional 
+maximization (ECM) algorithm by maximizing the observed data log-likelihood. 
+We provide simulated examples to illustrate the use of the model in model-based
+clustering of heterogeneous regression data and in fitting non-linear regression
+functions.
 
 # Installation
 
@@ -54,6 +73,8 @@ library(StMoE)
 ```
 
 ```{r, echo = TRUE}
+# Applicartion to a simulated data set
+
 n <- 500 # Size of the sample
 alphak <- matrix(c(0, 8), ncol = 1) # Parameters of the gating network
 betak <- matrix(c(0, -2.5, 0, 2.5), ncol = 2) # Regression coefficients of the experts
@@ -69,6 +90,30 @@ y <- sample$y
 
 K <- 2 # Number of regressors/experts
 p <- 1 # Order of the polynomial regression (regressors/experts)
+q <- 1 # Order of the logistic regression (gating network)
+
+n_tries <- 1
+max_iter <- 1500
+threshold <- 1e-5
+verbose <- TRUE
+verbose_IRLS <- FALSE
+
+stmoe <- emStMoE(X = x, Y = y, K, p, q, n_tries, max_iter, 
+                 threshold, verbose, verbose_IRLS)
+
+stmoe$plot()
+```
+
+```{r, echo = TRUE}
+# Applicartion to a real data set
+
+library(MASS)
+data("mcycle")
+x <- mcycle$times
+y <- mcycle$accel
+
+K <- 4 # Number of regressors/experts
+p <- 2 # Order of the polynomial regression (regressors/experts)
 q <- 1 # Order of the logistic regression (gating network)
 
 n_tries <- 1
