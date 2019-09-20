@@ -25,7 +25,7 @@
 #'   \eqn{(1, K)}).
 #' @field lambda The skewness parameters for each experts (matrix of size
 #'   \eqn{(1, K)}).
-#' @field delta delta is equal \eqn{\delta =
+#' @field delta delta is equal to \eqn{\delta =
 #'   \frac{\lambda}{\sqrt{1+\lambda^2}}}{\delta = \lambda /
 #'   (1+\lambda^2)^(1/2)}.
 #' @field nu The degree of freedom for the Student distribution for each
@@ -138,7 +138,9 @@ ParamStMoE <- setRefClass(
       nu <<- 50 * rand(1, K)
     },
 
-    MStep = function(statStMoE, calcAlpha = FALSE, calcBeta = FALSE, calcSigma2 = FALSE, calcLambda = FALSE, calcNu = FALSE, verbose_IRLS = FALSE) {
+    MStep = function(statStMoE, calcAlpha = FALSE, calcBeta = FALSE,
+                     calcSigma2 = FALSE, calcLambda = FALSE, calcNu = FALSE,
+                     verbose_IRLS = FALSE) {
       "Method which implements the M-step of the EM algorithm to learn the
       parameters of the StMoE model based on statistics provided by the object
       \\code{statStMoE} of class \\link{StatStMoE} (which contains the E-step)."
